@@ -1,0 +1,17 @@
+# editor
+.vimrc
+.vimrc.custom.config
+.vimrc.custom.plugins
+.ycm_extra_conf.py
+.vim/
+.vimplus/
+
+# temporary / runtime
+*.tmp
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
