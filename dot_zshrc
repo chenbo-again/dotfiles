@@ -1,6 +1,9 @@
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
 
+# Prefer user-installed terminal definitions, then use standard system paths.
+export TERMINFO_DIRS="$HOME/.terminfo:/etc/terminfo:/lib/terminfo:/usr/share/terminfo"
+
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 

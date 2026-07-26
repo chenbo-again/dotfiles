@@ -10,7 +10,7 @@ chezmoi 管理：
 - `~/.oh-my-zsh/` 及其固定版本的本地插件
 - `~/.config/nvim/`（LazyVim 配置和 `lazy-lock.json`）
 - `~/.config/atuin/config.toml`
-- `~/.terminfo/x/xterm-ghostty`
+- `~/.terminfo/x/xterm-ghostty`（另建 `~/.terminfo/78 -> x`，兼容 zsh-bin 的十六进制查找）
 
 chezmoi 不管理：
 
@@ -32,7 +32,7 @@ cd ~/.local/share/chezmoi
 ~/.local/bin/chezmoi apply
 ```
 
-`fetch-tools.sh` 会下载固定版本的 Linux x86_64 工具，校验官方 SHA-256 后安装到 `~/.local/opt/`，并在 `~/.local/bin/` 创建相对符号链接。已存在的对应工具会移动到 `~/.local/share/tool-fetch-backups/`，安装失败时自动恢复。
+`fetch-tools.sh` 会下载固定版本的 Linux x86_64 工具，校验官方 SHA-256 后安装到 `~/.local/opt/`，并为每个工具在 `~/.local/bin/` 创建相对符号链接。已存在的对应工具会移动到 `~/.local/share/tool-fetch-backups/`，安装失败时自动恢复。
 
 首次启动 `nvim` 时，配置会在线 clone `lazy.nvim`，随后由 LazyVim 根据 `lazy-lock.json` 安装插件。常用在线维护命令：
 
@@ -74,8 +74,11 @@ cd ~/.local/share/chezmoi
 - fzf 0.74.1
 - ripgrep 15.2.0（命令 `rg`）
 - fd 10.4.2
+- Zsh 5.8（romkatv/zsh-bin v6.1.1）
 
-除 Neovim、clangd 和 Bear 外，其余下载项均为官方静态或 musl 构建。Neovim 需要 glibc 2.35 或更新版本，clangd 需要 glibc 2.18 或更新版本，Bear 需要 glibc 2.34 或更新版本及 `libgcc_s.so.1`。
+除 Neovim、clangd 和 Bear 外，其余下载项均为官方静态或 musl 构建。Neovim 需要 glibc 2.35 或更新版本，clangd 需要 glibc 2.18 或更新版本，Bear 需要 glibc 2.34 或更新版本及 `libgcc_s.so.1`。Zsh 是完全静态、可重定位的 zsh-bin 构建，不依赖目标机的 glibc、ncurses 或系统 Zsh 模块。
+
+Zsh 使用本仓库 `zsh-bin-5.8-v6.1.1` GitHub Release 中的精简运行时：autoload 函数已预编译，上游内置 terminfo 已移除，改为由 `.zshrc` 依次搜索 `~/.terminfo` 和系统 terminfo 目录。脚本安装时只需解压并根据目标 HOME 重定位一次，然后创建 `~/.local/bin/zsh`。它不会修改 `/etc/shells` 或账号的登录 shell；需要时可直接执行 `~/.local/bin/zsh`。因此目标机即使没有系统 Zsh，也能加载本仓库的 Oh My Zsh 配置。
 
 Bear 官方不发布二进制。运行时包和 GPL 对应源码发布在本仓库的 `bear-4.1.5` GitHub Release，fetch 脚本校验运行时包的固定 SHA-256。
 

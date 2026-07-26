@@ -62,7 +62,7 @@ case $(uname -s):$(uname -m) in
     ;;
 esac
 
-required=(sha256sum mktemp tar unzip cp mv rm mkdir ln chmod date dirname uname cat)
+required=(sha256sum mktemp tar unzip cp mv rm mkdir ln chmod date dirname uname cat grep dd)
 ((OFFLINE)) || required+=(curl)
 for command_name in "${required[@]}"; do
   command -v "$command_name" >/dev/null 2>&1 || {
@@ -133,6 +133,9 @@ fetch ripgrep-15.2.0-x86_64-unknown-linux-musl.tar.gz \
 fetch fd-v10.4.2-x86_64-unknown-linux-musl.tar.gz \
   https://github.com/sharkdp/fd/releases/download/v10.4.2/fd-v10.4.2-x86_64-unknown-linux-musl.tar.gz \
   e3257d48e29a6be965187dbd24ce9af564e0fe67b3e73c9bdcd180f4ec11bdde
+fetch zsh-bin-5.8-v6.1.1-linux-x86_64.tar.gz \
+  https://github.com/chenbo-again/dotfiles/releases/download/zsh-bin-5.8-v6.1.1/zsh-bin-5.8-v6.1.1-linux-x86_64.tar.gz \
+  02fae3ce56e3087f32019e186cd2e99eef54b6207432fe05f45cde1b8a83dbe2
 
 stage=$(mktemp -d "$TARGET_HOME/.local/.fetch-tools-stage.XXXXXX")
 backup=
@@ -196,6 +199,12 @@ mv -- "$stage/unpack/ripgrep-15.2.0-x86_64-unknown-linux-musl" "$stage/opt/ripgr
 tar -xzf "$CACHE_DIR/fd-v10.4.2-x86_64-unknown-linux-musl.tar.gz" -C "$stage/unpack"
 mv -- "$stage/unpack/fd-v10.4.2-x86_64-unknown-linux-musl" "$stage/opt/fd"
 
+tar -xzf "$CACHE_DIR/zsh-bin-5.8-v6.1.1-linux-x86_64.tar.gz" -C "$stage/unpack"
+mv -- "$stage/unpack/zsh-bin-5.8-v6.1.1" "$stage/opt/zsh"
+"$stage/opt/zsh/share/zsh/5.8/scripts/relocate" \
+  -s "$stage/opt/zsh" \
+  -d "$TARGET_HOME/.local/opt/zsh"
+
 declare -A links=(
   [nvim]=../opt/nvim/bin/nvim
   [chezmoi]=../opt/chezmoi/chezmoi
@@ -209,6 +218,7 @@ declare -A links=(
   [fzf]=../opt/fzf/fzf
   [rg]=../opt/ripgrep/rg
   [fd]=../opt/fd/fd
+  [zsh]=../opt/zsh/bin/zsh
 )
 
 for command_name in "${!links[@]}"; do
@@ -221,9 +231,9 @@ done
 
 items=(
   opt/nvim opt/chezmoi opt/zmx opt/clangd opt/bear opt/yazi opt/atuin
-  opt/lazygit opt/fzf opt/ripgrep opt/fd
+  opt/lazygit opt/fzf opt/ripgrep opt/fd opt/zsh
   bin/nvim bin/chezmoi bin/zmx bin/clangd bin/bear bin/yazi bin/ya
-  bin/atuin bin/lazygit bin/fzf bin/rg bin/fd
+  bin/atuin bin/lazygit bin/fzf bin/rg bin/fd bin/zsh
 )
 
 timestamp=$(date +%Y%m%d-%H%M%S)
@@ -242,7 +252,7 @@ for item in "${items[@]}"; do
   installed+=("$item")
 done
 
-for command_name in nvim chezmoi zmx clangd bear yazi ya atuin lazygit fzf rg fd; do
+for command_name in nvim chezmoi zmx clangd bear yazi ya atuin lazygit fzf rg fd zsh; do
   "$TARGET_HOME/.local/bin/$command_name" --version >/dev/null
 done
 
