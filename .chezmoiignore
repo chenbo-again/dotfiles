@@ -5,7 +5,7 @@ __pycache__
 __pycache__/**
 *.pyc
 lazy-lock.json
-exact_dot_oh-my-zsh/exact_cache/DEBS_avail
-exact_dot_oh-my-zsh/exact_cache/dot_zsh-update
-exact_dot_oh-my-zsh/exact_cache/grep-alias
-exact_dot_oh-my-zsh/exact_cache/DEBS_installed
+.oh-my-zsh/cache/DEBS_avail
+.oh-my-zsh/cache/.zsh-update
+.oh-my-zsh/cache/grep-alias
+.oh-my-zsh/cache/DEBS_installed
