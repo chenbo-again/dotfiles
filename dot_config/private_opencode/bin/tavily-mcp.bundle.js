@@ -42816,7 +42816,7 @@ var KeyRotator = class {
       const state = JSON.parse((0, import_fs5.readFileSync)(KEYS_JSON_PATH, "utf-8"));
       if (Array.isArray(state.keys)) {
         this.keys = state.keys.filter((k) => typeof k === "string" && k.length > 0);
-        this.currentIndex = typeof state.currentIndex === "number" ? state.currentIndex : 0;
+        this.currentIndex = Math.floor(Math.random() * this.keys.length);
         if (this.keys.length > 0) {
           this.currentIndex = this.currentIndex % this.keys.length;
         }
@@ -42835,7 +42835,7 @@ var KeyRotator = class {
       return null;
     }
     const key = this.keys[this.currentIndex];
-    this.currentIndex = (this.currentIndex + 1) % this.keys.length;
+    this.currentIndex = Math.floor(Math.random() * this.keys.length);
     this.save();
     return key;
   }
