@@ -238,6 +238,7 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 
 alias oc=opencode
 alias ocr="opencode run --agent plan --model deepseek/deepseek-v4-flash --"
+alias lg=lazygit
 
 # --- zmx: terminal session persistence ---
 
