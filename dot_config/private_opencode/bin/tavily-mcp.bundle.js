@@ -42804,7 +42804,6 @@ var SESSION_ID = (0, import_crypto2.randomUUID)();
 var KEYS_JSON_PATH = process.env.TAVILY_KEYS_FILE || (0, import_path6.join)(process.cwd(), "keys.json");
 var KeyRotator = class {
   keys = [];
-  currentIndex = 0;
   constructor() {
     this.load();
   }
@@ -42816,28 +42815,15 @@ var KeyRotator = class {
       const state = JSON.parse((0, import_fs5.readFileSync)(KEYS_JSON_PATH, "utf-8"));
       if (Array.isArray(state.keys)) {
         this.keys = state.keys.filter((k) => typeof k === "string" && k.length > 0);
-        this.currentIndex = Math.floor(Math.random() * this.keys.length);
-        if (this.keys.length > 0) {
-          this.currentIndex = this.currentIndex % this.keys.length;
-        }
       }
     } catch {
     }
-  }
-  save() {
-    (0, import_fs5.writeFileSync)(KEYS_JSON_PATH, JSON.stringify({
-      keys: this.keys,
-      currentIndex: this.currentIndex
-    }, null, 2));
   }
   getNextKey() {
     if (this.keys.length === 0) {
       return null;
     }
-    const key = this.keys[this.currentIndex];
-    this.currentIndex = Math.floor(Math.random() * this.keys.length);
-    this.save();
-    return key;
+    return this.keys[Math.floor(Math.random() * this.keys.length)];
   }
   get hasKeys() {
     return this.keys.length > 0;

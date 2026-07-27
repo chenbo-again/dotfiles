@@ -150,7 +150,7 @@ cd ~/.local/share/chezmoi
 ./setup-remote-mcp.sh
 ```
 
-`tavily-keys.json` 格式为 `{"keys":["tvly-..."],"currentIndex":0}`。运行时沿用原有的简单轮转逻辑：每次工具调用选择当前 key、推进索引并写回 JSON。也可只提供旧的 `tavily-api.key` 作为单 key 回退。本机首次运行脚本时会把旧 `~/opencode-plugins/tavily-mcp/keys.json` 安全迁移到该位置。远端脚本从仓库内的多 key Tavily 源码包安装固定运行时，准备 `mcp-atlassian 0.23.0` 的 uv 缓存，并验证固定数量的只读 stdio 工具。它不创建 Tavily/Atlassian systemd 服务，也不监听 43101/43103；Opencode 启动时创建进程，退出时关闭进程。`--proxy-url URL` 会把 Tavily 后续启动使用的代理持久化到未纳入 chezmoi 的本机配置，`--offline` 可在 npm 与 uv 缓存完整时禁止下载安装。
+`tavily-keys.json` 格式为 `{"keys":["tvly-..."]}`。运行时只读该文件，并在进程内随机选择 key，不会把轮换状态写回 JSON。也可只提供旧的 `tavily-api.key` 作为单 key 回退。本机首次运行脚本时会把旧 `~/opencode-plugins/tavily-mcp/keys.json` 安全迁移到该位置。远端脚本从仓库内的多 key Tavily 源码包安装固定运行时，准备 `mcp-atlassian 0.23.0` 的 uv 缓存，并验证固定数量的只读 stdio 工具。它不创建 Tavily/Atlassian systemd 服务，也不监听 43101/43103；Opencode 启动时创建进程，退出时关闭进程。`--proxy-url URL` 会把 Tavily 后续启动使用的代理持久化到未纳入 chezmoi 的本机配置，`--offline` 可在 npm 与 uv 缓存完整时禁止下载安装。
 
 不要把任何 key 或 PAT 提交到 Git。
 

@@ -1,10 +1,10 @@
 README.md
 fetch-tools.sh
 setup-mcp-proxy.sh
-__pycache__
-__pycache__/**
-*.pyc
-lazy-lock.json
+**/__pycache__
+**/__pycache__/**
+**/*.pyc
+**/lazy-lock.json
 .oh-my-zsh/cache/DEBS_avail
 .oh-my-zsh/cache/.zsh-update
 .oh-my-zsh/cache/grep-alias
