@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+export PATH="$HOME/.local/bin:$PATH"
+export CONFLUENCE_PAT_FILE="$HOME/.config/opencode/secrets/confluence-local.pat"
+exec "node" "$HOME/.config/opencode/bin/confluence-mcp.bundle.js"

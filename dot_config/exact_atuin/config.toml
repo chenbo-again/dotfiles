@@ -1,5 +1,4 @@
-# Keep the portable package offline unless synchronization is enabled manually.
-auto_sync = false
+auto_sync = true
 update_check = false
 enter_accept = true
 

@@ -62,7 +62,7 @@ case $(uname -s):$(uname -m) in
     ;;
 esac
 
-required=(sha256sum mktemp tar unzip cp mv rm mkdir ln chmod date dirname uname cat)
+required=(sha256sum mktemp tar unzip xz cp mv rm mkdir ln chmod date dirname uname cat grep dd)
 ((OFFLINE)) || required+=(curl)
 for command_name in "${required[@]}"; do
   command -v "$command_name" >/dev/null 2>&1 || {
@@ -74,6 +74,12 @@ done
 mkdir -p "$CACHE_DIR" "$TARGET_HOME/.local"
 CACHE_DIR=$(cd "$CACHE_DIR" && pwd -P)
 TARGET_HOME=$(cd "$TARGET_HOME" && pwd -P)
+
+install_zsh=1
+if command -v zsh >/dev/null 2>&1 || [[ -x $TARGET_HOME/.local/bin/zsh ]]; then
+  install_zsh=0
+  printf 'Zsh is already available; skipping its installation.\n'
+fi
 
 fetch() {
   local filename=$1 url=$2 expected=$3
@@ -103,15 +109,12 @@ fetch() {
 fetch nvim-linux-x86_64.tar.gz \
   https://github.com/neovim/neovim/releases/download/v0.12.4/nvim-linux-x86_64.tar.gz \
   012bf3fcac5ade43914df3f174668bf64d05e049a4f032a388c027b1ebd78628
-fetch chezmoi-linux-amd64-musl \
-  https://github.com/twpayne/chezmoi/releases/download/v2.71.1/chezmoi-linux-amd64-musl \
-  aab0315d65a5e898e3eaf9e134050e0ead02dbb751019d59eb0a475dd7cfc6cf
+fetch chezmoi-linux-amd64 \
+  https://github.com/twpayne/chezmoi/releases/download/v2.71.1/chezmoi-linux-amd64 \
+  37d22a4947134c3d6cb87d7a2be7caa63684a27d57e2999c86564126e79424ae
 fetch zmx-0.7.0-linux-x86_64.tar.gz \
   https://zmx.sh/a/zmx-0.7.0-linux-x86_64.tar.gz \
   8b8783d7b120c9ffd0acf4aee37969054dc0dfef3c4f3a4728d2efd35f2e97a0
-fetch clangd-linux-22.1.6.zip \
-  https://github.com/clangd/clangd/releases/download/22.1.6/clangd-linux-22.1.6.zip \
-  a9c77443af2e447ed467e84771848d3a6ac1c56f84bcfcde717e66318de77cfa
 fetch bear-4.1.5-linux-x86_64-ubuntu22.04.tar.gz \
   https://github.com/chenbo-again/dotfiles/releases/download/bear-4.1.5/bear-4.1.5-linux-x86_64-ubuntu22.04.tar.gz \
   7b856aeef9ad8ab1f4a1e3ef3d1ef1776ce1ab195e24a0742d2d192a9d9db5e8
@@ -133,7 +136,24 @@ fetch ripgrep-15.2.0-x86_64-unknown-linux-musl.tar.gz \
 fetch fd-v10.4.2-x86_64-unknown-linux-musl.tar.gz \
   https://github.com/sharkdp/fd/releases/download/v10.4.2/fd-v10.4.2-x86_64-unknown-linux-musl.tar.gz \
   e3257d48e29a6be965187dbd24ce9af564e0fe67b3e73c9bdcd180f4ec11bdde
-
+fetch zsh-bin-5.8-v6.1.1-linux-x86_64.tar.gz \
+  https://github.com/chenbo-again/dotfiles/releases/download/zsh-bin-5.8-v6.1.1/zsh-bin-5.8-v6.1.1-linux-x86_64.tar.gz \
+  02fae3ce56e3087f32019e186cd2e99eef54b6207432fe05f45cde1b8a83dbe2
+fetch node-v22.23.1-linux-x64.tar.xz \
+  https://nodejs.org/download/release/v22.23.1/node-v22.23.1-linux-x64.tar.xz \
+  9749e988f437343b7fa832c69ded82a312e41a03116d766797ac14f6f9eee578
+fetch helix-25.07.1-x86_64-linux.tar.xz \
+  https://github.com/helix-editor/helix/releases/download/25.07.1/helix-25.07.1-x86_64-linux.tar.xz \
+  3f08e63ecd388fff657ad39722f88bb03dcf326f1f2da2700d99e1dc40ab2e8b
+fetch opencode-linux-x64.tar.gz \
+  https://github.com/anomalyco/opencode/releases/download/v1.18.6/opencode-linux-x64.tar.gz \
+  b5b7fa9509757b60249de8f22874b641a8b59a61b2e177b6d24e46805c7f352d
+fetch age-v1.3.1-linux-amd64.tar.gz \
+  https://github.com/FiloSottile/age/releases/download/v1.3.1/age-v1.3.1-linux-amd64.tar.gz \
+  bdc69c09cbdd6cf8b1f333d372a1f58247b3a33146406333e30c0f26e8f51377
+fetch rtk-x86_64-unknown-linux-musl.tar.gz \
+  https://github.com/rtk-ai/rtk/releases/download/v0.44.0/rtk-x86_64-unknown-linux-musl.tar.gz \
+  3c3316cfc068e372432b415faeab73d46f8047750d488dd94d01d8d9f016a2a1
 stage=$(mktemp -d "$TARGET_HOME/.local/.fetch-tools-stage.XXXXXX")
 backup=
 backed_up=0
@@ -167,16 +187,16 @@ tar -xzf "$CACHE_DIR/nvim-linux-x86_64.tar.gz" -C "$stage/unpack"
 mv -- "$stage/unpack/nvim-linux-x86_64" "$stage/opt/nvim"
 
 mkdir -p "$stage/opt/chezmoi"
-cp -- "$CACHE_DIR/chezmoi-linux-amd64-musl" "$stage/opt/chezmoi/chezmoi"
+cp -- "$CACHE_DIR/chezmoi-linux-amd64" "$stage/opt/chezmoi/chezmoi"
 chmod 755 "$stage/opt/chezmoi/chezmoi"
+tar -xzf "$CACHE_DIR/age-v1.3.1-linux-amd64.tar.gz" -C "$stage/unpack"
+cp -- "$stage/unpack/age/age" "$stage/unpack/age/age-keygen" "$stage/opt/chezmoi/"
+chmod 755 "$stage/opt/chezmoi/age" "$stage/opt/chezmoi/age-keygen"
 
 mkdir -p "$stage/unpack/zmx"
 tar -xzf "$CACHE_DIR/zmx-0.7.0-linux-x86_64.tar.gz" -C "$stage/unpack/zmx"
 mkdir -p "$stage/opt/zmx"
 cp -a "$stage/unpack/zmx/." "$stage/opt/zmx/"
-
-unzip -q "$CACHE_DIR/clangd-linux-22.1.6.zip" -d "$stage/unpack"
-mv -- "$stage/unpack/clangd_22.1.6" "$stage/opt/clangd"
 
 tar -xzf "$CACHE_DIR/bear-4.1.5-linux-x86_64-ubuntu22.04.tar.gz" -C "$stage/unpack"
 mv -- "$stage/unpack/bear-4.1.5" "$stage/opt/bear"
@@ -196,11 +216,36 @@ mv -- "$stage/unpack/ripgrep-15.2.0-x86_64-unknown-linux-musl" "$stage/opt/ripgr
 tar -xzf "$CACHE_DIR/fd-v10.4.2-x86_64-unknown-linux-musl.tar.gz" -C "$stage/unpack"
 mv -- "$stage/unpack/fd-v10.4.2-x86_64-unknown-linux-musl" "$stage/opt/fd"
 
+tar -xJf "$CACHE_DIR/node-v22.23.1-linux-x64.tar.xz" -C "$stage/unpack"
+mv -- "$stage/unpack/node-v22.23.1-linux-x64" "$stage/opt/node"
+
+tar -xJf "$CACHE_DIR/helix-25.07.1-x86_64-linux.tar.xz" -C "$stage/unpack"
+mv -- "$stage/unpack/helix-25.07.1-x86_64-linux" "$stage/opt/helix"
+
+mkdir -p "$stage/opt/opencode"
+tar -xzf "$CACHE_DIR/opencode-linux-x64.tar.gz" -C "$stage/opt/opencode"
+chmod 755 "$stage/opt/opencode/opencode"
+
+mkdir -p "$stage/opt/rtk"
+tar -xzf "$CACHE_DIR/rtk-x86_64-unknown-linux-musl.tar.gz" -C "$stage/opt/rtk"
+chmod 755 "$stage/opt/rtk/rtk"
+
+if ((install_zsh)); then
+  tar -xzf "$CACHE_DIR/zsh-bin-5.8-v6.1.1-linux-x86_64.tar.gz" -C "$stage/unpack"
+  mv -- "$stage/unpack/zsh-bin-5.8-v6.1.1" "$stage/opt/zsh"
+  "$stage/opt/zsh/share/zsh/5.8/scripts/relocate" \
+    -s "$stage/opt/zsh" \
+    -d "$TARGET_HOME/.local/opt/zsh"
+fi
+
 declare -A links=(
   [nvim]=../opt/nvim/bin/nvim
   [chezmoi]=../opt/chezmoi/chezmoi
+  [opencode]=../opt/opencode/opencode
+  [rtk]=../opt/rtk/rtk
+  [age]=../opt/chezmoi/age
+  [age-keygen]=../opt/chezmoi/age-keygen
   [zmx]=../opt/zmx/zmx
-  [clangd]=../opt/clangd/bin/clangd
   [bear]=../opt/bear/libexec/bear/bin/bear-driver
   [yazi]=../opt/yazi/yazi
   [ya]=../opt/yazi/ya
@@ -209,7 +254,16 @@ declare -A links=(
   [fzf]=../opt/fzf/fzf
   [rg]=../opt/ripgrep/rg
   [fd]=../opt/fd/fd
+  [hx]=../opt/helix/hx
+  [node]=../opt/node/bin/node
+  [npm]=../opt/node/bin/npm
+  [npx]=../opt/node/bin/npx
+  [corepack]=../opt/node/bin/corepack
 )
+
+if ((install_zsh)); then
+  links[zsh]=../opt/zsh/bin/zsh
+fi
 
 for command_name in "${!links[@]}"; do
   ln -s -- "${links[$command_name]}" "$stage/bin/$command_name"
@@ -220,11 +274,15 @@ for command_name in "${!links[@]}"; do
 done
 
 items=(
-  opt/nvim opt/chezmoi opt/zmx opt/clangd opt/bear opt/yazi opt/atuin
-  opt/lazygit opt/fzf opt/ripgrep opt/fd
-  bin/nvim bin/chezmoi bin/zmx bin/clangd bin/bear bin/yazi bin/ya
-  bin/atuin bin/lazygit bin/fzf bin/rg bin/fd
+  opt/nvim opt/chezmoi opt/opencode   opt/rtk opt/zmx opt/bear opt/yazi opt/atuin
+  opt/lazygit opt/fzf opt/ripgrep opt/fd opt/helix opt/node
+  bin/nvim bin/chezmoi   bin/opencode bin/rtk bin/age bin/age-keygen bin/zmx bin/bear bin/yazi bin/ya
+  bin/atuin bin/lazygit bin/fzf bin/rg bin/fd bin/hx
+  bin/node bin/npm bin/npx bin/corepack
 )
+if ((install_zsh)); then
+  items+=(opt/zsh bin/zsh)
+fi
 
 timestamp=$(date +%Y%m%d-%H%M%S)
 backup=$TARGET_HOME/.local/share/tool-fetch-backups/$timestamp-$$
@@ -242,7 +300,12 @@ for item in "${items[@]}"; do
   installed+=("$item")
 done
 
-for command_name in nvim chezmoi zmx clangd bear yazi ya atuin lazygit fzf rg fd; do
+commands=(nvim chezmoi opencode rtk age age-keygen zmx bear yazi ya atuin lazygit fzf rg fd hx node npm npx corepack)
+if ((install_zsh)); then
+  commands+=(zsh)
+fi
+export PATH="$TARGET_HOME/.local/bin:$PATH"
+for command_name in "${commands[@]}"; do
   "$TARGET_HOME/.local/bin/$command_name" --version >/dev/null
 done
 
@@ -256,4 +319,24 @@ if ((backed_up)); then
   printf 'Previous tool files were moved to %s.\n' "$backup"
 else
   rm -rf -- "$backup"
+fi
+
+if ((install_zsh)); then
+  printf '\nPortable Zsh was installed. To make it your login shell, run:\n'
+  printf '  ZSH_PATH=%q\n' "$TARGET_HOME/.local/bin/zsh"
+  printf '  grep -qxF "$ZSH_PATH" /etc/shells || printf '\''%%s\\n'\'' "$ZSH_PATH" | sudo tee -a /etc/shells\n'
+  printf '  chsh -s "$ZSH_PATH"\n'
+  cat <<'INSTRUCTIONS'
+
+If you cannot use chsh, run this command to start portable Zsh from
+interactive Bash login shells (it will not add the block twice):
+
+grep -qxF '# Start portable Zsh from interactive Bash login shells.' "$HOME/.bash_profile" 2>/dev/null || cat >> "$HOME/.bash_profile" <<'ZSH_PROFILE'
+
+# Start portable Zsh from interactive Bash login shells.
+if [[ $- == *i* ]] && [[ -x "$HOME/.local/bin/zsh" ]] && [[ -z ${ZSH_VERSION:-} ]]; then
+  exec "$HOME/.local/bin/zsh" -l
+fi
+ZSH_PROFILE
+INSTRUCTIONS
 fi
