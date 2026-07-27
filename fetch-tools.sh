@@ -154,6 +154,9 @@ fetch age-v1.3.1-linux-amd64.tar.gz \
 fetch rtk-x86_64-unknown-linux-musl.tar.gz \
   https://github.com/rtk-ai/rtk/releases/download/v0.44.0/rtk-x86_64-unknown-linux-musl.tar.gz \
   3c3316cfc068e372432b415faeab73d46f8047750d488dd94d01d8d9f016a2a1
+fetch clangd-linux-22.1.6.zip \
+  https://github.com/clangd/clangd/releases/download/22.1.6/clangd-linux-22.1.6.zip \
+  a9c77443af2e447ed467e84771848d3a6ac1c56f84bcfcde717e66318de77cfa
 stage=$(mktemp -d "$TARGET_HOME/.local/.fetch-tools-stage.XXXXXX")
 backup=
 backed_up=0
@@ -230,6 +233,9 @@ mkdir -p "$stage/opt/rtk"
 tar -xzf "$CACHE_DIR/rtk-x86_64-unknown-linux-musl.tar.gz" -C "$stage/opt/rtk"
 chmod 755 "$stage/opt/rtk/rtk"
 
+unzip -q "$CACHE_DIR/clangd-linux-22.1.6.zip" -d "$stage/unpack"
+mv -- "$stage/unpack/clangd_22.1.6" "$stage/opt/clangd"
+
 if ((install_zsh)); then
   tar -xzf "$CACHE_DIR/zsh-bin-5.8-v6.1.1-linux-x86_64.tar.gz" -C "$stage/unpack"
   mv -- "$stage/unpack/zsh-bin-5.8-v6.1.1" "$stage/opt/zsh"
@@ -243,6 +249,7 @@ declare -A links=(
   [chezmoi]=../opt/chezmoi/chezmoi
   [opencode]=../opt/opencode/opencode
   [rtk]=../opt/rtk/rtk
+  [clangd]=../opt/clangd/bin/clangd
   [age]=../opt/chezmoi/age
   [age-keygen]=../opt/chezmoi/age-keygen
   [zmx]=../opt/zmx/zmx
@@ -275,8 +282,8 @@ done
 
 items=(
   opt/nvim opt/chezmoi opt/opencode   opt/rtk opt/zmx opt/bear opt/yazi opt/atuin
-  opt/lazygit opt/fzf opt/ripgrep opt/fd opt/helix opt/node
-  bin/nvim bin/chezmoi   bin/opencode bin/rtk bin/age bin/age-keygen bin/zmx bin/bear bin/yazi bin/ya
+  opt/lazygit opt/fzf opt/ripgrep opt/fd opt/helix opt/node opt/clangd
+  bin/nvim bin/chezmoi   bin/opencode bin/rtk bin/clangd bin/age bin/age-keygen bin/zmx bin/bear bin/yazi bin/ya
   bin/atuin bin/lazygit bin/fzf bin/rg bin/fd bin/hx
   bin/node bin/npm bin/npx bin/corepack
 )
@@ -300,7 +307,7 @@ for item in "${items[@]}"; do
   installed+=("$item")
 done
 
-commands=(nvim chezmoi opencode rtk age age-keygen zmx bear yazi ya atuin lazygit fzf rg fd hx node npm npx corepack)
+commands=(nvim chezmoi opencode rtk clangd age age-keygen zmx bear yazi ya atuin lazygit fzf rg fd hx node npm npx corepack)
 if ((install_zsh)); then
   commands+=(zsh)
 fi
