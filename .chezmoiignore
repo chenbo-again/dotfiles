@@ -4,3 +4,4 @@ setup-mcp-proxy.sh
 __pycache__
 __pycache__/**
 *.pyc
+lazy-lock.json
