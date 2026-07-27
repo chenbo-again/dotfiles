@@ -1,0 +1,4 @@
+[opener]
+edit = [
+  { run = "hx %s", desc = "Helix", for = "unix", block = true },
+]
