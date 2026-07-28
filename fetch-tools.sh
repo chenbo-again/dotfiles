@@ -195,7 +195,7 @@ mkdir -p "$stage/opt" "$stage/bin" "$stage/unpack"
 mkdir -p "$stage/opt/busybox"
 cp -- "$CACHE_DIR/busybox" "$stage/opt/busybox/busybox"
 chmod 755 "$stage/opt/busybox/busybox"
-ln -s ../opt/busybox/busybox "$stage/bin/unzip"
+ln -sf ../opt/busybox/busybox "$stage/bin/unzip"
 export PATH="$stage/bin:$PATH"
 
 tar -xzf "$CACHE_DIR/nvim-linux-x86_64.tar.gz" -C "$stage/unpack"
