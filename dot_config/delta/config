@@ -1,0 +1,14 @@
+[delta]
+    features = side-by-side line-numbers
+    syntax-theme = OneHalfDark
+    plus-style = syntax "#003800"
+    minus-style = syntax "#380000"
+
+[delta "side-by-side"]
+    side-by-side = true
+
+[delta "line-numbers"]
+    line-numbers = true
+
+[delta "inline"]
+    side-by-side = false

@@ -1,0 +1,9 @@
+[safe]
+	directory = /home/chenbo/Documents/新人入职/devmachinefs
+[user]
+	name = liushengbo
+	email = liushengbo@hygon.cn
+[http]
+	sslVerify = false
+[core]
+	editor = hx
