@@ -62,7 +62,7 @@ case $(uname -s):$(uname -m) in
     ;;
 esac
 
-required=(sha256sum mktemp tar unzip xz cp mv rm mkdir ln chmod date dirname uname cat grep dd)
+required=(sha256sum mktemp tar xz cp mv rm mkdir ln chmod date dirname uname cat grep dd)
 ((OFFLINE)) || required+=(curl)
 for command_name in "${required[@]}"; do
   command -v "$command_name" >/dev/null 2>&1 || {
@@ -157,6 +157,12 @@ fetch rtk-x86_64-unknown-linux-musl.tar.gz \
 fetch clangd-linux-22.1.6.zip \
   https://github.com/clangd/clangd/releases/download/22.1.6/clangd-linux-22.1.6.zip \
   a9c77443af2e447ed467e84771848d3a6ac1c56f84bcfcde717e66318de77cfa
+fetch sttr_Linux_x86_64.tar.gz \
+  https://github.com/abhimanyu003/sttr/releases/download/v0.2.30/sttr_Linux_x86_64.tar.gz \
+  f4cb5b240853b53f67d7b789c9cf5969e794675c5c38aad2ed5ff2c065be4c19
+fetch busybox \
+  https://busybox.net/downloads/binaries/1.35.0-x86_64-linux-musl/busybox \
+  6e123e7f3202a8c1e9b1f94d8941580a25135382b99e8d3e34fb858bba311348
 stage=$(mktemp -d "$TARGET_HOME/.local/.fetch-tools-stage.XXXXXX")
 backup=
 backed_up=0
@@ -185,6 +191,12 @@ trap cleanup EXIT
 trap rollback ERR
 
 mkdir -p "$stage/opt" "$stage/bin" "$stage/unpack"
+
+mkdir -p "$stage/opt/busybox"
+cp -- "$CACHE_DIR/busybox" "$stage/opt/busybox/busybox"
+chmod 755 "$stage/opt/busybox/busybox"
+ln -s ../opt/busybox/busybox "$stage/bin/unzip"
+export PATH="$stage/bin:$PATH"
 
 tar -xzf "$CACHE_DIR/nvim-linux-x86_64.tar.gz" -C "$stage/unpack"
 mv -- "$stage/unpack/nvim-linux-x86_64" "$stage/opt/nvim"
@@ -236,6 +248,9 @@ chmod 755 "$stage/opt/rtk/rtk"
 unzip -q "$CACHE_DIR/clangd-linux-22.1.6.zip" -d "$stage/unpack"
 mv -- "$stage/unpack/clangd_22.1.6" "$stage/opt/clangd"
 
+mkdir -p "$stage/opt/sttr"
+tar -xzf "$CACHE_DIR/sttr_Linux_x86_64.tar.gz" -C "$stage/opt/sttr"
+
 if ((install_zsh)); then
   tar -xzf "$CACHE_DIR/zsh-bin-5.8-v6.1.1-linux-x86_64.tar.gz" -C "$stage/unpack"
   mv -- "$stage/unpack/zsh-bin-5.8-v6.1.1" "$stage/opt/zsh"
@@ -250,6 +265,8 @@ declare -A links=(
   [opencode]=../opt/opencode/opencode
   [rtk]=../opt/rtk/rtk
   [clangd]=../opt/clangd/bin/clangd
+  [sttr]=../opt/sttr/sttr
+  [unzip]=../opt/busybox/busybox
   [age]=../opt/chezmoi/age
   [age-keygen]=../opt/chezmoi/age-keygen
   [zmx]=../opt/zmx/zmx
@@ -282,10 +299,11 @@ done
 
 items=(
   opt/nvim opt/chezmoi opt/opencode   opt/rtk opt/zmx opt/bear opt/yazi opt/atuin
-  opt/lazygit opt/fzf opt/ripgrep opt/fd opt/helix opt/node opt/clangd
+  opt/lazygit opt/fzf opt/ripgrep opt/fd opt/helix opt/node opt/clangd opt/sttr
+  opt/busybox
   bin/nvim bin/chezmoi   bin/opencode bin/rtk bin/clangd bin/age bin/age-keygen bin/zmx bin/bear bin/yazi bin/ya
   bin/atuin bin/lazygit bin/fzf bin/rg bin/fd bin/hx
-  bin/node bin/npm bin/npx bin/corepack
+  bin/node bin/npm bin/npx bin/corepack bin/sttr bin/unzip
 )
 if ((install_zsh)); then
   items+=(opt/zsh bin/zsh)
@@ -307,7 +325,7 @@ for item in "${items[@]}"; do
   installed+=("$item")
 done
 
-commands=(nvim chezmoi opencode rtk clangd age age-keygen zmx bear yazi ya atuin lazygit fzf rg fd hx node npm npx corepack)
+commands=(nvim chezmoi opencode rtk clangd age age-keygen zmx bear yazi ya atuin lazygit fzf rg fd hx node npm npx corepack sttr unzip)
 if ((install_zsh)); then
   commands+=(zsh)
 fi
