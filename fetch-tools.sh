@@ -195,6 +195,7 @@ mkdir -p "$stage/opt" "$stage/bin" "$stage/unpack"
 mkdir -p "$stage/opt/busybox"
 cp -- "$CACHE_DIR/busybox" "$stage/opt/busybox/busybox"
 chmod 755 "$stage/opt/busybox/busybox"
+rm -rf "$stage/bin/unzip"
 ln -sf ../opt/busybox/busybox "$stage/bin/unzip"
 export PATH="$stage/bin:$PATH"
 
