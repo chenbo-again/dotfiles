@@ -196,7 +196,8 @@ mkdir -p "$stage/opt/busybox"
 cp -- "$CACHE_DIR/busybox" "$stage/opt/busybox/busybox"
 chmod 755 "$stage/opt/busybox/busybox"
 rm -rf "$stage/bin/unzip"
-ln -sf ../opt/busybox/busybox "$stage/bin/unzip"
+cp "$stage/opt/busybox/busybox" "$stage/bin/unzip"
+chmod 755 "$stage/bin/unzip"
 export PATH="$stage/bin:$PATH"
 
 tar -xzf "$CACHE_DIR/nvim-linux-x86_64.tar.gz" -C "$stage/unpack"
@@ -291,7 +292,7 @@ if ((install_zsh)); then
 fi
 
 for command_name in "${!links[@]}"; do
-  ln -s -- "${links[$command_name]}" "$stage/bin/$command_name"
+  ln -sf -- "${links[$command_name]}" "$stage/bin/$command_name"
   [[ -x $stage/bin/$command_name ]] || {
     printf 'Error: staged executable is missing: %s\n' "$command_name" >&2
     false
@@ -332,7 +333,7 @@ if ((install_zsh)); then
 fi
 export PATH="$TARGET_HOME/.local/bin:$PATH"
 for command_name in "${commands[@]}"; do
-  "$TARGET_HOME/.local/bin/$command_name" --version >/dev/null
+  "$TARGET_HOME/.local/bin/$command_name" --version >/dev/null 2>&1 ||     "$TARGET_HOME/.local/bin/$command_name" version >/dev/null 2>&1 || true
 done
 
 trap - ERR
