@@ -1,1 +1,59 @@
-theme = "autumn"
+theme = "dracula"
+
+# 编辑器设置
+[editor]
+line-number = "relative"
+mouse = true
+# rulers = [120]
+cursorline = true
+bufferline = "always"
+color-modes = true
+completion-trigger-len = 1
+idle-timeout = 0
+gutters = ["diff", "diagnostics", "line-numbers", "spacer"]
+
+# [editor.whitespace]
+# render = "all"
+
+# 缩进提示线
+[editor.indent-guides]
+render = true
+skip-levels = 1
+
+# 设置光标样式
+[editor.cursor-shape]
+insert = "bar"
+normal = "block"
+select = "underline"
+
+[editor.file-picker]
+hidden = false
+
+# 设置底部状态行
+[editor.statusline]
+left = ["mode", "spinner"]
+center = ["file-name"]
+right = ["diagnostics", "selections", "position", "file-encoding", "file-line-ending", "file-type"]
+separator = "|"
+mode.normal = "普通模式"
+mode.insert = "插入模式"
+mode.select = "选择模式"
+
+# # 输入模式快捷键配置
+# [keys.insert]
+# C-b = "move_char_left"
+# C-f = "move_char_right"
+# C-p = "move_line_up"
+# C-n = "move_line_down"
+# C-a = "goto_line_start"
+# C-e = ["goto_line_end","move_char_right"]
+
+[keys.normal]
+C-g = [":new", ":insert-output lazygit", ":buffer-close!", ":redraw", ":reload-all"]
+C-y = [
+  ':sh rm -f /tmp/unique-file',
+  ':insert-output yazi "%{buffer_name}" --chooser-file=/tmp/unique-file',
+  ':sh printf "\x1b[?1049h\x1b[?2004h" > /dev/tty',
+  ':open %sh{cat /tmp/unique-file}',
+  ':redraw',
+]
