@@ -1,0 +1,95 @@
+# Match the custom keybindings in ~/.config/ghostty/config.ghostty.
+
+# Match Ghostty's default font and color palette.
+font_family      JetBrains Mono, Noto Sans Mono CJK SC
+bold_font        auto
+italic_font      auto
+bold_italic_font auto
+font_size 12
+
+tab_bar_edge top
+# hide_window_decorations yes
+
+inactive_text_alpha 0.5
+strip_trailing_spaces smart
+window_padding_width 1
+
+# Notify when a command running for at least 5 seconds finishes while unfocused.
+notify_on_cmd_finish unfocused
+
+# kash layout metadata sync (disabled)
+# watcher {{ .chezmoi.homeDir }}/.config/kitty/kash_watcher.py
+# allow_remote_control yes
+
+# theme
+background #282c34
+background_opacity 0.9
+background_blur 1
+foreground #ffffff
+cursor #ffffff
+cursor_text_color #282c34
+selection_background #ffffff
+selection_foreground #282c34
+
+color0 #1d1f21
+color1 #cc6666
+color2 #b5bd68
+color3 #f0c674
+color4 #81a2be
+color5 #b294bb
+color6 #8abeb7
+color7 #c5c8c6
+color8 #666666
+color9 #d54e53
+color10 #b9ca4a
+color11 #e7c547
+color12 #7aa6da
+color13 #c397d8
+color14 #70c0b1
+color15 #eaeaea
+
+active_tab_foreground #ffffff
+active_tab_background #3e4451
+inactive_tab_foreground #c5c8c6
+inactive_tab_background #21252b
+
+# Forward selection keys to shells and terminal applications.
+map shift+left             send_text all \e[1;2D
+map shift+right            send_text all \e[1;2C
+map shift+up               send_text all \e[1;2A
+map shift+down             send_text all \e[1;2B
+map shift+home             send_text all \e[1;2H
+map shift+end              send_text all \e[1;2F
+map ctrl+shift+left        send_text all \e[1;6D
+map ctrl+shift+right       send_text all \e[1;6C
+map ctrl+shift+home        send_text all \e[1;6H
+map ctrl+shift+end         send_text all \e[1;6F
+map ctrl+shift+a           send_text all \e[97;6u
+map ctrl+shift+e           send_text all \e[101;6u
+
+# Use Kitty's tree-based split layout. Stack is used for split zoom.
+enabled_layouts splits,stack
+
+# Focus neighboring splits.
+map ctrl+shift+h           neighboring_window left
+map ctrl+shift+j           neighboring_window bottom
+map ctrl+shift+k           neighboring_window top
+map ctrl+shift+l           neighboring_window right
+
+# New split in the given direction, focus moves to the new window
+# (matches Ghostty new_split). Verified against kitty 0.45.0:
+#   launch --location only accepts before/after/vsplit/hsplit (NOT left/up),
+#   so up needs launch + move_window chained via combine.
+map ctrl+alt+h            combine : launch --location=vsplit --cwd=current : move_window left
+map ctrl+alt+j            launch --location=hsplit --cwd=current
+map ctrl+alt+k            combine : launch --location=hsplit --cwd=current : move_window top
+map ctrl+alt+l            launch --location=vsplit --cwd=current
+
+# Tabs, split zoom, configuration reload, and diagnostics.
+map super+t                new_tab_with_cwd
+map ctrl+enter             toggle_fullscreen
+map ctrl+shift+z           toggle_layout stack
+map super+shift+r          load_config_file
+map super+shift+i          debug_config
+# kash detach (disabled)
+# map super+shift+d        launch --type=background --allow-remote-control --copy-env {{ .chezmoi.homeDir }}/.local/bin/kash detach
