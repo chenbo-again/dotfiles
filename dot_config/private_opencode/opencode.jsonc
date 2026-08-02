@@ -5,8 +5,15 @@
     "opencode-pty",
     "openrtk",
     "opencode-zellij-namer",
+    "@mohak34/opencode-notifier@0.2.8",
     "@tarquinen/opencode-dcp@latest",
-    "@mohak34/opencode-notifier@0.2.8"
+    ["@vectorize-io/opencode-hindsight", {
+      "hindsightApiUrl": "http://127.0.0.1:8888",
+      "bankId": "chenbo",
+      "autoRecall": true,
+      "autoRetain": true,
+      "recallBudget": "mid"
+    }]
   ],
   "permission": {
     "skill": {
@@ -59,5 +66,9 @@
       "enabled": true,
       "timeout": 30000
     }
+  },
+  "compaction": {
+    "auto": true,
+    "prune": true
   }
 }
