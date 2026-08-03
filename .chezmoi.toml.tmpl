@@ -2,3 +2,7 @@ encryption = "age"
 [age]
 identity = "{{ .chezmoi.homeDir }}/.config/chezmoi/key.txt"
 recipient = "age1cgwqpkzcj36e8grvn5a5zmrvs8fqt9nqkt9ze939w6pnk8vc0sfsrgsjrz"
+
+[data]
+master = {{ or (eq .chezmoi.hostname "chenbook") (eq .chezmoi.hostname "chenbox2u") }}
+slave = {{ not (or (eq .chezmoi.hostname "chenbook") (eq .chezmoi.hostname "chenbox2u")) }}

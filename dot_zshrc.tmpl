@@ -175,6 +175,7 @@ path=(
 export PATH
 
 # Route external traffic through the local FlClash mixed proxy.
+{{- if .slave }}
 proxy_on() {
   local proxy_url="http://127.0.0.1:7899"
   export http_proxy="$proxy_url"
@@ -201,6 +202,7 @@ proxy_status() {
 }
 
 proxy_on
+{{- end }}
 
 # Format output from the time reserved word.
 export TIMEFMT=$'\nreal\t%E\nuser\t%U\nsys\t%S'
@@ -314,4 +316,11 @@ fi
 
 if [[ -x "$HOME/.local/bin/atuin" ]]; then
   eval "$("$HOME/.local/bin/atuin" init zsh)"
+fi
+
+# fnm
+FNM_PATH="$HOME/.local/share/fnm"
+if [ -d "$FNM_PATH" ]; then
+  export PATH="$FNM_PATH:$PATH"
+  eval "$(fnm env --shell zsh)"
 fi
