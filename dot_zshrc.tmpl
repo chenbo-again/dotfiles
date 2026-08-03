@@ -94,6 +94,9 @@ fpath=(
 )
 source $ZSH/oh-my-zsh.sh
 
+# Prepend hostname to the prompt.
+PROMPT="%{$fg_bold[magenta]%}%m%{$reset_color%} $PROMPT"
+
 # Write text to the local clipboard, using OSC 52 when running over SSH.
 _zle_write_text_to_clipboard() {
   emulate -L zsh
