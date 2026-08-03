@@ -9,7 +9,7 @@
     "@tarquinen/opencode-dcp@latest",
     ["@vectorize-io/opencode-hindsight", {
       "hindsightApiUrl": "http://{{ if .master }}172.25.23.205{{ else }}127.0.0.1{{ end }}:8888",
-      "bankId": "{{ .chezmoi.username }}",
+      "bankId": "{{ if .master }}liushengbo{{ else }}slave{{ end }}",
       "autoRecall": true,
       "autoRetain": true,
       "recallBudget": "mid"
