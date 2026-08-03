@@ -1,6 +1,0 @@
-{
-  "plugin": [
-    "@tarquinen/opencode-dcp@latest",
-    "./plugins/btw.tsx"
-  ]
-}
