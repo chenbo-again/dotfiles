@@ -139,9 +139,6 @@ fetch fd-v10.4.2-x86_64-unknown-linux-musl.tar.gz \
 fetch zsh-bin-5.8-v6.1.1-linux-x86_64.tar.gz \
   https://github.com/chenbo-again/dotfiles/releases/download/zsh-bin-5.8-v6.1.1/zsh-bin-5.8-v6.1.1-linux-x86_64.tar.gz \
   02fae3ce56e3087f32019e186cd2e99eef54b6207432fe05f45cde1b8a83dbe2
-fetch node-v22.23.1-linux-x64.tar.xz \
-  https://nodejs.org/download/release/v22.23.1/node-v22.23.1-linux-x64.tar.xz \
-  9749e988f437343b7fa832c69ded82a312e41a03116d766797ac14f6f9eee578
 fetch helix-25.07.1-x86_64-linux.tar.xz \
   https://github.com/helix-editor/helix/releases/download/25.07.1/helix-25.07.1-x86_64-linux.tar.xz \
   3f08e63ecd388fff657ad39722f88bb03dcf326f1f2da2700d99e1dc40ab2e8b
@@ -163,6 +160,9 @@ fetch sttr_Linux_x86_64.tar.gz \
 fetch busybox \
   https://busybox.net/downloads/binaries/1.35.0-x86_64-linux-musl/busybox \
   6e123e7f3202a8c1e9b1f94d8941580a25135382b99e8d3e34fb858bba311348
+fetch fnm-linux.zip \
+  https://github.com/Schniz/fnm/releases/download/v1.39.0/fnm-linux.zip \
+  7807664f39d39fc518da1c35ba0181e4b3267603c4b1dedeb4b5fc6ae440a224
 stage=$(mktemp -d "$TARGET_HOME/.local/.fetch-tools-stage.XXXXXX")
 backup=
 backed_up=0
@@ -233,9 +233,6 @@ mv -- "$stage/unpack/ripgrep-15.2.0-x86_64-unknown-linux-musl" "$stage/opt/ripgr
 tar -xzf "$CACHE_DIR/fd-v10.4.2-x86_64-unknown-linux-musl.tar.gz" -C "$stage/unpack"
 mv -- "$stage/unpack/fd-v10.4.2-x86_64-unknown-linux-musl" "$stage/opt/fd"
 
-tar -xJf "$CACHE_DIR/node-v22.23.1-linux-x64.tar.xz" -C "$stage/unpack"
-mv -- "$stage/unpack/node-v22.23.1-linux-x64" "$stage/opt/node"
-
 tar -xJf "$CACHE_DIR/helix-25.07.1-x86_64-linux.tar.xz" -C "$stage/unpack"
 mv -- "$stage/unpack/helix-25.07.1-x86_64-linux" "$stage/opt/helix"
 
@@ -252,6 +249,10 @@ mv -- "$stage/unpack/clangd_22.1.6" "$stage/opt/clangd"
 
 mkdir -p "$stage/opt/sttr"
 tar -xzf "$CACHE_DIR/sttr_Linux_x86_64.tar.gz" -C "$stage/opt/sttr"
+
+mkdir -p "$stage/opt/fnm"
+unzip -q "$CACHE_DIR/fnm-linux.zip" -d "$stage/opt/fnm"
+chmod 755 "$stage/opt/fnm/fnm"
 
 if ((install_zsh)); then
   tar -xzf "$CACHE_DIR/zsh-bin-5.8-v6.1.1-linux-x86_64.tar.gz" -C "$stage/unpack"
@@ -281,10 +282,7 @@ declare -A links=(
   [rg]=../opt/ripgrep/rg
   [fd]=../opt/fd/fd
   [hx]=../opt/helix/hx
-  [node]=../opt/node/bin/node
-  [npm]=../opt/node/bin/npm
-  [npx]=../opt/node/bin/npx
-  [corepack]=../opt/node/bin/corepack
+  [fnm]=../opt/fnm/fnm
 )
 
 if ((install_zsh)); then
@@ -301,11 +299,11 @@ done
 
 items=(
   opt/nvim opt/chezmoi opt/opencode   opt/rtk opt/zmx opt/bear opt/yazi opt/atuin
-  opt/lazygit opt/fzf opt/ripgrep opt/fd opt/helix opt/node opt/clangd opt/sttr
-  opt/busybox
+  opt/lazygit opt/fzf opt/ripgrep opt/fd opt/helix opt/clangd opt/sttr
+  opt/busybox opt/fnm
   bin/nvim bin/chezmoi   bin/opencode bin/rtk bin/clangd bin/age bin/age-keygen bin/zmx bin/bear bin/yazi bin/ya
   bin/atuin bin/lazygit bin/fzf bin/rg bin/fd bin/hx
-  bin/node bin/npm bin/npx bin/corepack bin/sttr bin/unzip
+  bin/sttr bin/unzip bin/fnm
 )
 if ((install_zsh)); then
   items+=(opt/zsh bin/zsh)
@@ -327,7 +325,7 @@ for item in "${items[@]}"; do
   installed+=("$item")
 done
 
-commands=(nvim chezmoi opencode rtk clangd age age-keygen zmx bear yazi ya atuin lazygit fzf rg fd hx node npm npx corepack sttr unzip)
+commands=(nvim chezmoi opencode rtk clangd age age-keygen zmx bear yazi ya atuin lazygit fzf rg fd hx sttr unzip fnm)
 if ((install_zsh)); then
   commands+=(zsh)
 fi
@@ -335,6 +333,18 @@ export PATH="$TARGET_HOME/.local/bin:$PATH"
 for command_name in "${commands[@]}"; do
   "$TARGET_HOME/.local/bin/$command_name" --version >/dev/null 2>&1 ||     "$TARGET_HOME/.local/bin/$command_name" version >/dev/null 2>&1 || true
 done
+
+FNM_DIR=${FNM_DIR:-$TARGET_HOME/.local/share/fnm}
+if ((OFFLINE)); then
+  if [[ ! -d $FNM_DIR/node-versions ]] || [[ -z $(command ls "$FNM_DIR/node-versions") ]]; then
+    printf 'Error: offline mode requires fnm node versions pre-seeded in %s.\n' "$FNM_DIR" >&2
+    exit 1
+  fi
+else
+  FNM_DIR=$FNM_DIR "$TARGET_HOME/.local/bin/fnm" install 24 >/dev/null
+  FNM_DIR=$FNM_DIR "$TARGET_HOME/.local/bin/fnm" default 24 >/dev/null
+  printf 'Installed Node 24 via fnm under %s.\n' "$FNM_DIR"
+fi
 
 trap - ERR
 cleanup
