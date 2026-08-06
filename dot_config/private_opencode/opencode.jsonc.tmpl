@@ -45,25 +45,19 @@
       "enabled": true,
       "timeout": 60000
     },
-    "jira": {
-      "type": "local",
-      "command": [
-        "/bin/bash",
-        "-c",
-        "exec \"$HOME/.config/opencode/bin/jira-mcp-stdio\""
-      ],
+    "atlassian": {
+      "type": "remote",
+      "url": "http://{{ if .master }}172.25.23.205{{ else }}127.0.0.1{{ end }}:43103/mcp",
+      "oauth": false,
       "enabled": true,
-      "timeout": 30000
+      "timeout": 60000
     },
-    "confluence": {
-      "type": "local",
-      "command": [
-        "/bin/bash",
-        "-c",
-        "exec \"$HOME/.config/opencode/bin/confluence-mcp-stdio\""
-      ],
+    "gerrit": {
+      "type": "remote",
+      "url": "http://{{ if .master }}172.25.23.205{{ else }}127.0.0.1{{ end }}:43104/mcp",
+      "oauth": false,
       "enabled": true,
-      "timeout": 30000
+      "timeout": 60000
     }
   },
   "compaction": {
