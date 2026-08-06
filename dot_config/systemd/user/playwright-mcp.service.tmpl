@@ -1,0 +1,14 @@
+[Unit]
+Description=Playwright MCP server (port 43102)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+Environment=PATH=%h/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ExecStart={{ if .is_chenbox2u }}{{ .chezmoi.homeDir }}/.config/opencode/playwright-mcp/node_modules/@playwright/mcp/cli.js{{ else }}{{ .chezmoi.homeDir }}/opencode-plugins/playwright-mcp/node_modules/@playwright/mcp/cli.js{{ end }} --port 43102 --host {{ if .is_chenbox2u }}0.0.0.0{{ else }}127.0.0.1{{ end }} --headless --allowed-hosts '*'
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=default.target
