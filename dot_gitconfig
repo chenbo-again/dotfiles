@@ -7,3 +7,19 @@
 	sslVerify = false
 [core]
 	editor = hx
+	pager = delta
+
+[interactive]
+	diffFilter = delta --color-only
+
+[add]
+	pager = delta
+
+[log]
+	pager = delta
+
+[blame]
+	pager = delta
+
+[reflog]
+	pager = delta
