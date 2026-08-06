@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-set -Eeuo pipefail
-export PATH="$HOME/.local/bin:$PATH"
-export JIRA_PAT_FILE="$HOME/.config/opencode/secrets/jira.pat"
-exec node "$HOME/.config/opencode/bin/jira-mcp.bundle.js"
