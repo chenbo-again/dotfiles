@@ -2,5 +2,8 @@ auto_sync = true
 update_check = false
 enter_accept = true
 
+filter_mode = "session-preload"
+filter_mode_shell_up_key_binding = "session-preload"
+
 [sync]
 records = true
