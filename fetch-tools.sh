@@ -309,7 +309,7 @@ items=(
   opt/nvim opt/chezmoi opt/opencode   opt/rtk opt/zmx opt/bear opt/yazi opt/atuin
   opt/lazygit opt/fzf opt/ripgrep opt/fd opt/helix opt/clangd opt/sttr
   opt/busybox opt/fnm opt/autossh
-  bin/nvim bin/chezmoi   bin/opencode bin/rtk bin/clangd bin/age bin/age-keygen bin/zmx bin/bear bin/yazi bin/ya
+  bin/nvim bin/chezmoi   bin/opencode bin/rtk bin/clangd bin/age bin/age-keygen bin/zmx bin/bear bin/yazi bin/ya bin/autossh
   bin/atuin bin/lazygit bin/fzf bin/rg bin/fd bin/hx
   bin/sttr bin/unzip bin/fnm
 )
