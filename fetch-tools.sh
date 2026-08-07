@@ -118,6 +118,9 @@ fetch zmx-0.7.0-linux-x86_64.tar.gz \
 fetch bear-4.1.5-linux-x86_64-ubuntu22.04.tar.gz \
   https://github.com/chenbo-again/dotfiles/releases/download/bear-4.1.5/bear-4.1.5-linux-x86_64-ubuntu22.04.tar.gz \
   7b856aeef9ad8ab1f4a1e3ef3d1ef1776ce1ab195e24a0742d2d192a9d9db5e8
+fetch autossh-1.4g-linux-x86_64.tar.gz \
+  https://github.com/chenbo-again/dotfiles/releases/download/autossh-1.4g/autossh-1.4g-linux-x86_64.tar.gz \
+  0bf375f6a5ec7a2651335a65daea8f6f1e4f4be05f5cd4598b287906c45f4bc4
 fetch yazi-x86_64-unknown-linux-musl.zip \
   https://github.com/sxyazi/yazi/releases/download/v26.5.6/yazi-x86_64-unknown-linux-musl.zip \
   1031a02560d053301537195a6661d227c15cb4ce5c30481050b31e2b88681bff
@@ -218,6 +221,10 @@ cp -a "$stage/unpack/zmx/." "$stage/opt/zmx/"
 tar -xzf "$CACHE_DIR/bear-4.1.5-linux-x86_64-ubuntu22.04.tar.gz" -C "$stage/unpack"
 mv -- "$stage/unpack/bear-4.1.5" "$stage/opt/bear"
 
+mkdir -p "$stage/opt/autossh"
+tar -xzf "$CACHE_DIR/autossh-1.4g-linux-x86_64.tar.gz" -C "$stage/opt/autossh"
+chmod 755 "$stage/opt/autossh/autossh"
+
 unzip -q "$CACHE_DIR/yazi-x86_64-unknown-linux-musl.zip" -d "$stage/unpack"
 mv -- "$stage/unpack/yazi-x86_64-unknown-linux-musl" "$stage/opt/yazi"
 
@@ -273,6 +280,7 @@ declare -A links=(
   [age]=../opt/chezmoi/age
   [age-keygen]=../opt/chezmoi/age-keygen
   [zmx]=../opt/zmx/zmx
+  [autossh]=../opt/autossh/autossh
   [bear]=../opt/bear/libexec/bear/bin/bear-driver
   [yazi]=../opt/yazi/yazi
   [ya]=../opt/yazi/ya
@@ -300,7 +308,7 @@ done
 items=(
   opt/nvim opt/chezmoi opt/opencode   opt/rtk opt/zmx opt/bear opt/yazi opt/atuin
   opt/lazygit opt/fzf opt/ripgrep opt/fd opt/helix opt/clangd opt/sttr
-  opt/busybox opt/fnm
+  opt/busybox opt/fnm opt/autossh
   bin/nvim bin/chezmoi   bin/opencode bin/rtk bin/clangd bin/age bin/age-keygen bin/zmx bin/bear bin/yazi bin/ya
   bin/atuin bin/lazygit bin/fzf bin/rg bin/fd bin/hx
   bin/sttr bin/unzip bin/fnm
@@ -325,7 +333,7 @@ for item in "${items[@]}"; do
   installed+=("$item")
 done
 
-commands=(nvim chezmoi opencode rtk clangd age age-keygen zmx bear yazi ya atuin lazygit fzf rg fd hx sttr unzip fnm)
+commands=(nvim chezmoi opencode rtk clangd age age-keygen zmx autossh bear yazi ya atuin lazygit fzf rg fd hx sttr unzip fnm)
 if ((install_zsh)); then
   commands+=(zsh)
 fi
