@@ -8,7 +8,7 @@ Type=simple
 Environment=HOME=%h
 Environment=AUTOSSH_GATETIME=0
 Environment=AUTOSSH_POLL=10
-ExecStart=/usr/bin/autossh -M 0 -N -o GSSAPIAuthentication=no -o ExitOnForwardFailure=yes -o ServerAliveInterval=30 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=accept-new -L 127.0.0.1:8888:172.25.23.205:8888 -L 127.0.0.1:7899:172.25.23.205:7899 -L 127.0.0.1:43102:172.25.23.205:43102 -L 127.0.0.1:43103:172.25.23.205:43103 -L 127.0.0.1:43104:172.25.23.205:43104 10.65.10.1
+ExecStart={{ .chezmoi.homeDir }}/.local/bin/autossh -M 0 -N -o GSSAPIAuthentication=no -o ExitOnForwardFailure=yes -o ServerAliveInterval=30 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=accept-new -L 127.0.0.1:8888:172.25.23.205:8888 -L 127.0.0.1:7899:172.25.23.205:7899 -L 127.0.0.1:43102:172.25.23.205:43102 -L 127.0.0.1:43103:172.25.23.205:43103 -L 127.0.0.1:43104:172.25.23.205:43104 10.65.10.1
 Restart=always
 RestartSec=5
 
