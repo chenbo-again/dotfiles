@@ -120,7 +120,7 @@ fetch bear-4.1.5-linux-x86_64-ubuntu22.04.tar.gz \
   7b856aeef9ad8ab1f4a1e3ef3d1ef1776ce1ab195e24a0742d2d192a9d9db5e8
 fetch autossh-1.4g-linux-x86_64.tar.gz \
   https://github.com/chenbo-again/dotfiles/releases/download/autossh-1.4g/autossh-1.4g-linux-x86_64.tar.gz \
-  0bf375f6a5ec7a2651335a65daea8f6f1e4f4be05f5cd4598b287906c45f4bc4
+  9498354a557892cca19b1fe8401a90f6daea8437f311383a4a45d1c5ffec6017
 fetch yazi-x86_64-unknown-linux-musl.zip \
   https://github.com/sxyazi/yazi/releases/download/v26.5.6/yazi-x86_64-unknown-linux-musl.zip \
   1031a02560d053301537195a6661d227c15cb4ce5c30481050b31e2b88681bff
