@@ -1,7 +1,7 @@
 # Match the custom keybindings in ~/.config/ghostty/config.ghostty.
 
 # Match Ghostty's default font and color palette.
-font_family      JetBrains Mono, Noto Sans Mono CJK SC
+font_family      FantasqueSansM Nerd Font Mono, Noto Sans Mono CJK SC
 bold_font        auto
 italic_font      auto
 bold_italic_font auto
@@ -10,16 +10,15 @@ font_size 12
 tab_bar_edge top
 # hide_window_decorations yes
 
+# Animated cursor trail
+cursor_trail 1
+
 inactive_text_alpha 0.5
 strip_trailing_spaces smart
 window_padding_width 1
 
 # Notify when a command running for at least 5 seconds finishes while unfocused.
 notify_on_cmd_finish unfocused
-
-# kash layout metadata sync (disabled)
-# watcher {{ .chezmoi.homeDir }}/.config/kitty/kash_watcher.py
-# allow_remote_control yes
 
 # theme
 background #282c34
@@ -91,5 +90,3 @@ map ctrl+enter             toggle_fullscreen
 map ctrl+shift+z           toggle_layout stack
 map super+shift+r          load_config_file
 map super+shift+i          debug_config
-# kash detach (disabled)
-# map super+shift+d        launch --type=background --allow-remote-control --copy-env {{ .chezmoi.homeDir }}/.local/bin/kash detach
