@@ -3,3 +3,4 @@
 -- Add any additional options here
 
 vim.opt.exrc = true
+vim.opt.spelllang:append("cjk")
