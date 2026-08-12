@@ -121,6 +121,12 @@ fetch bear-4.1.5-linux-x86_64-ubuntu22.04.tar.gz \
 fetch autossh-1.4g-linux-x86_64.tar.gz \
   https://github.com/chenbo-again/dotfiles/releases/download/autossh-1.4g/autossh-1.4g-linux-x86_64.tar.gz \
   08e103809fdb64d1b0dfd044fcadca4463f99359e256b7715cb5362e9821ba51
+fetch tmux-3.7-linux-x86_64.tar.gz \
+  https://github.com/chenbo-again/dotfiles/releases/download/tmux-3.7/tmux-3.7-linux-x86_64.tar.gz \
+  838dbfe2f0177bce5e2bd7767b47c8f027412ca0847ed436ddc7ac024ff66d21
+fetch tree-sitter-0.26.12-linux-x86_64.tar.gz \
+  https://github.com/chenbo-again/dotfiles/releases/download/tree-sitter-0.26.12/tree-sitter-0.26.12-linux-x86_64.tar.gz \
+  b956b5db81f895195752f6b93aa2904c970c316da13fa2d8937a11dcb9e3d57e
 fetch yazi-x86_64-unknown-linux-musl.zip \
   https://github.com/sxyazi/yazi/releases/download/v26.5.6/yazi-x86_64-unknown-linux-musl.zip \
   1031a02560d053301537195a6661d227c15cb4ce5c30481050b31e2b88681bff
@@ -225,6 +231,14 @@ mkdir -p "$stage/opt/autossh"
 tar -xzf "$CACHE_DIR/autossh-1.4g-linux-x86_64.tar.gz" -C "$stage/opt/autossh"
 chmod 755 "$stage/opt/autossh/autossh"
 
+mkdir -p "$stage/opt/tmux"
+tar -xzf "$CACHE_DIR/tmux-3.7-linux-x86_64.tar.gz" -C "$stage/opt/tmux"
+chmod 755 "$stage/opt/tmux/tmux"
+
+mkdir -p "$stage/opt/tree-sitter"
+tar -xzf "$CACHE_DIR/tree-sitter-0.26.12-linux-x86_64.tar.gz" -C "$stage/opt/tree-sitter"
+chmod 755 "$stage/opt/tree-sitter/tree-sitter"
+
 unzip -q "$CACHE_DIR/yazi-x86_64-unknown-linux-musl.zip" -d "$stage/unpack"
 mv -- "$stage/unpack/yazi-x86_64-unknown-linux-musl" "$stage/opt/yazi"
 
@@ -281,6 +295,8 @@ declare -A links=(
   [age-keygen]=../opt/chezmoi/age-keygen
   [zmx]=../opt/zmx/zmx
   [autossh]=../opt/autossh/autossh
+  [tmux]=../opt/tmux/tmux
+  [tree-sitter]=../opt/tree-sitter/tree-sitter
   [bear]=../opt/bear/libexec/bear/bin/bear-driver
   [yazi]=../opt/yazi/yazi
   [ya]=../opt/yazi/ya
@@ -308,8 +324,9 @@ done
 items=(
   opt/nvim opt/chezmoi opt/opencode   opt/rtk opt/zmx opt/bear opt/yazi opt/atuin
   opt/lazygit opt/fzf opt/ripgrep opt/fd opt/helix opt/clangd opt/sttr
-  opt/busybox opt/fnm opt/autossh
+  opt/busybox opt/fnm opt/autossh opt/tmux opt/tree-sitter
   bin/nvim bin/chezmoi   bin/opencode bin/rtk bin/clangd bin/age bin/age-keygen bin/zmx bin/bear bin/yazi bin/ya bin/autossh
+  bin/tmux bin/tree-sitter
   bin/atuin bin/lazygit bin/fzf bin/rg bin/fd bin/hx
   bin/sttr bin/unzip bin/fnm
 )
@@ -333,7 +350,7 @@ for item in "${items[@]}"; do
   installed+=("$item")
 done
 
-commands=(nvim chezmoi opencode rtk clangd age age-keygen zmx autossh bear yazi ya atuin lazygit fzf rg fd hx sttr unzip fnm)
+commands=(nvim chezmoi opencode rtk clangd age age-keygen zmx autossh tmux tree-sitter bear yazi ya atuin lazygit fzf rg fd hx sttr unzip fnm)
 if ((install_zsh)); then
   commands+=(zsh)
 fi
