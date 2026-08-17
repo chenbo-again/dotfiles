@@ -94,6 +94,21 @@ fpath=(
 )
 source $ZSH/oh-my-zsh.sh
 
+# Process completion for kill: show the full command and always use a menu.
+zstyle ':completion:*:*:*:*:processes' command 'ps -u $LOGNAME -o pid,user,command -w'
+zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#) ([0-9a-z-]#)*=01;36=0=01'
+zstyle ':completion:*:*:kill:*' menu yes select
+zstyle ':completion:*:*:kill:*' force-list always
+zstyle ':completion:*:*:kill:*' insert-ids single
+
+# Do not offer arguments already present on rm or kill command lines.
+zstyle ':completion:*:(rm|kill):*' ignore-line other
+zstyle ':completion:*:rm:*' file-patterns '*:all-files'
+
+# Group manual pages by section and include non-section-1 qualifiers.
+zstyle ':completion:*:manuals' separate-sections true
+zstyle ':completion:*:manuals.(^1*)' insert-sections true
+
 # Prepend hostname to the prompt.
 PROMPT="%{$fg_bold[magenta]%}%m%{$reset_color%} $PROMPT"
 
@@ -318,7 +333,7 @@ if [[ -x "$HOME/.local/bin/zmx" ]]; then
 fi
 
 if [[ -x "$HOME/.local/bin/atuin" ]]; then
-  eval "$("$HOME/.local/bin/atuin" init zsh)"
+  eval "$("$HOME/.local/bin/atuin" init zsh --disable-up-arrow)"
 fi
 
 # fnm

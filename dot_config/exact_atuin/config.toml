@@ -2,8 +2,11 @@ auto_sync = true
 update_check = false
 enter_accept = true
 
-filter_mode = "session-preload"
-filter_mode_shell_up_key_binding = "session-preload"
+filter_mode = "global"
+filter_mode_shell_up_key_binding = "global"
 
 [sync]
 records = true
+
+[ai]
+enabled = true

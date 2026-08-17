@@ -4,3 +4,4 @@
 
 vim.opt.exrc = true
 vim.opt.spelllang:append("cjk")
+vim.g.autoformat = false

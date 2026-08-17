@@ -6,13 +6,13 @@
     "openrtk",
     "@mohak34/opencode-notifier@0.2.8",
     "@tarquinen/opencode-dcp@latest",
-    ["@vectorize-io/opencode-hindsight", {
-      "hindsightApiUrl": "http://{{ if .master }}172.25.23.205{{ else }}127.0.0.1{{ end }}:8888",
-      "bankId": "{{ if .master }}liushengbo{{ else }}slave{{ end }}",
-      "autoRecall": true,
-      "autoRetain": true,
-      "recallBudget": "mid"
-    }]
+    // ["@vectorize-io/opencode-hindsight", {
+    //   "hindsightApiUrl": "http://{{ if .master }}172.25.23.205{{ else }}127.0.0.1{{ end }}:8888",
+    //   "bankId": "{{ if .master }}liushengbo{{ else }}slave{{ end }}",
+    //   "autoRecall": true,
+    //   "autoRetain": true,
+    //   "recallBudget": "mid"
+    // }]
   ],
   "permission": {
     "skill": {
@@ -28,10 +28,12 @@
     "tavily": {
       "type": "local",
       "command": [
-        "/bin/bash",
-        "-c",
-        "exec \"$HOME/.config/opencode/bin/tavily-mcp-stdio\""
+        "node",
+        "{env:HOME}/.config/opencode/bin/tavily-mcp.bundle.js"
       ],
+      "environment": {
+        "TAVILY_KEYS_FILE": "{env:HOME}/.config/opencode/secrets/tavily-keys.json"
+      },
       "enabled": true,
       "timeout": 960000
     },
@@ -42,20 +44,20 @@
       "enabled": true,
       "timeout": 60000
     },
-    "atlassian": {
-      "type": "remote",
-      "url": "http://{{ if .master }}172.25.23.205{{ else }}127.0.0.1{{ end }}:43103/mcp",
-      "oauth": false,
-      "enabled": true,
-      "timeout": 60000
-    },
-    "gerrit": {
-      "type": "remote",
-      "url": "http://{{ if .master }}172.25.23.205{{ else }}127.0.0.1{{ end }}:43104/mcp",
-      "oauth": false,
-      "enabled": true,
-      "timeout": 60000
-    }
+    // "atlassian": {
+    //   "type": "remote",
+    //   "url": "http://{{ if .master }}172.25.23.205{{ else }}127.0.0.1{{ end }}:43103/mcp",
+    //   "oauth": false,
+    //   "enabled": true,
+    //   "timeout": 60000
+    // },
+    // "gerrit": {
+    //   "type": "remote",
+    //   "url": "http://{{ if .master }}172.25.23.205{{ else }}127.0.0.1{{ end }}:43104/mcp",
+    //   "oauth": false,
+    //   "enabled": true,
+    //   "timeout": 60000
+    // }
   },
   "compaction": {
     "auto": true,

@@ -419,8 +419,9 @@ set -g mouse on
 set -gu prefix2
 unbind C-a
 unbind C-b
-set -g prefix C-a
-bind C-a send-prefix
+unbind C-z
+set -g prefix C-z
+bind C-z send-prefix
 
 # if you don't want Oh my tmux! to alter a binding or a setting, use #!important
 # bind c new-window -c '#{pane_current_path}' #!important
@@ -481,10 +482,10 @@ set -ag terminal-overrides ",xterm-kitty:RGB"
 set -ag terminal-overrides ",xterm-ghostty:RGB"
 
 # stay in copy-mode after yank (don't jump back to current position)
-bind -T copy-mode-vi y send -X copy-selection
+bind -T copy-mode-vi y send -X copy-selection-no-clear
 bind -T copy-mode-vi Enter send -X copy-selection-and-cancel
 # bind -T copy-mode-vi C-j send -X copy-pipe-no-clear
-
+# set -g mode-style 'bg=#3d4451,fg=default'  # 高亮当前选择
 
 # -- custom variables ----------------------------------------------------------
 

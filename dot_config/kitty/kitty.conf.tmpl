@@ -1,15 +1,17 @@
 # Match the custom keybindings in ~/.config/ghostty/config.ghostty.
 
 # Match Ghostty's default font and color palette.
-font_family      FantasqueSansM Nerd Font Mono, Noto Sans Mono CJK SC
+font_family      FantasqueSansM Nerd Font Mono Bold
 bold_font        auto
 italic_font      auto
 bold_italic_font auto
-font_size 12
+font_size 14
 
 tab_bar_edge top
+tab_bar_style slant
 allow_remote_control yes
 listen_on unix:@kitty
+clipboard_control write-clipboard write-primary read-clipboard read-primary
 # hide_window_decorations yes
 
 # Animated cursor trail
@@ -17,10 +19,12 @@ cursor_trail 1
 
 inactive_text_alpha 0.5
 strip_trailing_spaces smart
-window_padding_width 1
+window_padding_width 0
 
 # Notify when a command running for at least 5 seconds finishes while unfocused.
 notify_on_cmd_finish unfocused
+confirm_os_window_close 0
+linux_display_server auto
 
 # theme
 background #282c34
@@ -69,27 +73,28 @@ map ctrl+shift+a           send_text all \e[97;6u
 map ctrl+shift+e           send_text all \e[101;6u
 
 # Use Kitty's tree-based split layout. Stack is used for split zoom.
-enabled_layouts splits,stack
+enabled_layouts stack
 
 # Focus neighboring splits.
-map ctrl+shift+h           neighboring_window left
-map ctrl+shift+j           neighboring_window bottom
-map ctrl+shift+k           neighboring_window top
-map ctrl+shift+l           neighboring_window right
+# map ctrl+shift+h           neighboring_window left
+# map ctrl+shift+j           neighboring_window bottom
+# map ctrl+shift+k           neighboring_window top
+# map ctrl+shift+l           neighboring_window right
 
 # New split in the given direction, focus moves to the new window
 # (matches Ghostty new_split). Verified against kitty 0.45.0:
 #   launch --location only accepts before/after/vsplit/hsplit (NOT left/up),
 #   so up needs launch + move_window chained via combine.
-map ctrl+alt+h            combine : launch --location=vsplit --cwd=current : move_window left
-map ctrl+alt+j            launch --location=hsplit --cwd=current
-map ctrl+alt+k            combine : launch --location=hsplit --cwd=current : move_window top
-map ctrl+alt+l            launch --location=vsplit --cwd=current
+# map ctrl+alt+h            combine : launch --location=vsplit --cwd=current : move_window left
+# map ctrl+alt+j            launch --location=hsplit --cwd=current
+# map ctrl+alt+k            combine : launch --location=hsplit --cwd=current : move_window top
+# map ctrl+alt+l            launch --location=vsplit --cwd=current
 
 # Tabs, split zoom, configuration reload, and diagnostics.
-map super+t                new_tab_with_cwd
+# map super+t                new_tab_with_cwd
+map ctrl+alt+w              close_tab
 map ctrl+enter             toggle_fullscreen
-map ctrl+shift+z           toggle_layout stack
+# map ctrl+shift+z           toggle_layout stack
 map super+shift+r          load_config_file
 map super+shift+i          debug_config
 
