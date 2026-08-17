@@ -5,3 +5,8 @@
 vim.opt.exrc = true
 vim.opt.spelllang:append("cjk")
 vim.g.autoformat = false
+
+if vim.env.SSH_CONNECTION or vim.env.SSH_TTY then
+  vim.g.clipboard = vim.env.TMUX and "tmux" or "osc52"
+end
+vim.opt.clipboard = "unnamedplus"
