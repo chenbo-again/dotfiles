@@ -112,74 +112,6 @@ zstyle ':completion:*:manuals.(^1*)' insert-sections true
 # Prepend hostname to the prompt.
 PROMPT="%{$fg_bold[magenta]%}%m%{$reset_color%} $PROMPT"
 
-# Write text to the local clipboard, using OSC 52 when running over SSH.
-_zle_write_text_to_clipboard() {
-  emulate -L zsh
-  local _text=$1 _encoded
-
-  if [[ -n ${SSH_CONNECTION-} || -n ${SSH_TTY-} ]] && (( $+commands[base64] )); then
-    _encoded=$(printf '%s' "$_text" | base64) || return 1
-    _encoded=${_encoded//$'\n'/}
-    _encoded=${_encoded//$'\r'/}
-    printf '\e]52;c;%s\a' "$_encoded" > /dev/tty
-  elif [[ -n ${WAYLAND_DISPLAY-} ]] && (( $+commands[wl-copy] )); then
-    printf '%s' "$_text" | wl-copy
-  elif [[ -n ${DISPLAY-} ]] && (( $+commands[xclip] )); then
-    printf '%s' "$_text" | xclip -selection clipboard
-  elif [[ -n ${DISPLAY-} ]] && (( $+commands[xsel] )); then
-    printf '%s' "$_text" | xsel --clipboard --input
-  else
-    return 1
-  fi
-}
-
-# Copy or cut the active zsh-shift-select region.
-_zle_copy_region_to_clipboard() {
-  emulate -L zsh
-  if (( REGION_ACTIVE )); then
-    local _start _end
-    if (( CURSOR < MARK )); then _start=$CURSOR; _end=$MARK
-    else _start=$MARK; _end=$CURSOR; fi
-    if _zle_write_text_to_clipboard "${BUFFER[_start+1,_end]}"; then
-      zle deactivate-region -w
-    else
-      zle -M 'Clipboard unavailable (OSC 52/base64 or a local clipboard tool is required)'
-    fi
-  fi
-}
-
-_zle_cut_region_to_clipboard() {
-  emulate -L zsh
-  if (( REGION_ACTIVE )); then
-    local _start _end
-    if (( CURSOR < MARK )); then _start=$CURSOR; _end=$MARK
-    else _start=$MARK; _end=$CURSOR; fi
-    if _zle_write_text_to_clipboard "${BUFFER[_start+1,_end]}"; then
-      zle kill-region -w
-    else
-      zle -M 'Clipboard unavailable (OSC 52/base64 or a local clipboard tool is required)'
-    fi
-  fi
-}
-
-zle -N _zle_copy_region_to_clipboard
-zle -N _zle_cut_region_to_clipboard
-bindkey '^[[99;6u' _zle_copy_region_to_clipboard
-bindkey '^[[27;6;99~' _zle_copy_region_to_clipboard
-bindkey -M shift-select '^[[99;6u' _zle_copy_region_to_clipboard
-bindkey -M shift-select '^[[27;6;99~' _zle_copy_region_to_clipboard
-bindkey '^[[120;6u' _zle_cut_region_to_clipboard
-bindkey '^[[27;6;120~' _zle_cut_region_to_clipboard
-bindkey -M shift-select '^[[120;6u' _zle_cut_region_to_clipboard
-bindkey -M shift-select '^[[27;6;120~' _zle_cut_region_to_clipboard
-
-# Ctrl+Backspace can arrive as Ctrl+H, CSI-u, or xterm modifyOtherKeys.
-bindkey '^H' backward-kill-word
-bindkey '^[[127;5u' backward-kill-word
-bindkey '^[[8;5u' backward-kill-word
-bindkey '^[[27;5;127~' backward-kill-word
-bindkey '^[[27;5;8~' backward-kill-word
-
 # User configuration
 unset LC_ALL
 # User-installed command-line tools.
@@ -193,34 +125,6 @@ path=(
 export PATH
 
 # Route external traffic through the local FlClash mixed proxy.
-{{- if .slave }}
-proxy_on() {
-  local proxy_url="http://127.0.0.1:7899"
-  export http_proxy="$proxy_url"
-  export https_proxy="$proxy_url"
-  export HTTP_PROXY="$proxy_url"
-  export HTTPS_PROXY="$proxy_url"
-  export ALL_PROXY="$proxy_url"
-  export all_proxy="$proxy_url"
-  export no_proxy="localhost,127.0.0.1,::1,hygon.cn,.hygon.cn,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
-  export NO_PROXY="$no_proxy"
-}
-
-proxy_off() {
-  unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY ALL_PROXY all_proxy
-  unset no_proxy NO_PROXY
-}
-
-proxy_status() {
-  if [[ -n ${https_proxy-} ]]; then
-    printf 'Proxy enabled: %s\n' "$https_proxy"
-  else
-    printf 'Proxy disabled\n'
-  fi
-}
-
-proxy_on
-{{- end }}
 
 # Format output from the time reserved word.
 export TIMEFMT=$'\nreal\t%E\nuser\t%U\nsys\t%S'
@@ -269,67 +173,12 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 alias oc=opencode
 alias ocr="opencode run --agent plan --model deepseek/deepseek-v4-flash --"
 alias lg=lazygit
-
-# --- zmx: terminal session persistence ---
-
-if [[ -x "$HOME/.local/bin/zmx" ]]; then
-  eval "$("$HOME/.local/bin/zmx" completions zsh)"
-
-  zmx-select() {
-    local display
-    display=$(zmx list 2>/dev/null | while IFS=$'\t' read -r name pid clients created dir; do
-      name=${name#*name=}
-      pid=${pid#*pid=}
-      clients=${clients#*clients=}
-      dir=${dir#*start_dir=}
-      printf "%-20s  pid:%-8s  clients:%-2s  %s\n" "$name" "$pid" "$clients" "$dir"
-    done)
-
-    local output query key selected session_name
-    output=$({ [[ -n "$display" ]] && echo "$display"; } | fzf \
-      --print-query \
-      --expect=ctrl-n \
-      --height=80% \
-      --reverse \
-      --prompt="zmx> " \
-      --header="Enter: select | Ctrl-N: create new" \
-      --preview='zmx history {1}' \
-      --preview-window=right:60%:follow \
-    )
-    local rc=$?
-
-    query=$(echo "$output" | sed -n '1p')
-    key=$(echo "$output" | sed -n '2p')
-    selected=$(echo "$output" | sed -n '3p')
-
-    if [[ "$key" == "ctrl-n" && -n "$query" ]]; then
-      session_name="$query"
-    elif [[ $rc -eq 0 && -n "$selected" ]]; then
-      session_name=$(echo "$selected" | awk '{print $1}')
-    elif [[ -n "$query" ]]; then
-      session_name="$query"
-    else
-      return 130
-    fi
-
-    zmx attach "$session_name"
-  }
-
-  alias zs=zmx-select
-
-  if command -v autossh &> /dev/null; then
-    alias ash='autossh -M 0 -q'
-  fi
-
-  if [[ -n ${ZMX_SESSION-} ]]; then
-    PROMPT="[zmx:$ZMX_SESSION] $PROMPT"
-  elif [[ -n ${SSH_CONNECTION-} ]]; then
-    local count
-    count=$(zmx ls --short 2>/dev/null | wc -l)
-    if [[ "$count" -gt 0 ]]; then
-      echo "zmx: $count session(s) active; run \`zs\` to attach" >&2
-    fi
-  fi
+if command -v autossh &> /dev/null; then
+  alias ash='autossh -M 0 -q'
+fi
+if command -v nvim &> /dev/null; then
+  alias vi=nvim
+  alias vim=nvim
 fi
 
 if [[ -x "$HOME/.local/bin/atuin" ]]; then
@@ -342,3 +191,32 @@ if [ -d "$FNM_PATH" ]; then
   export PATH="$FNM_PATH:$PATH"
   eval "$(fnm env --shell zsh)"
 fi
+
+#compdef opencode
+###-begin-opencode-completions-###
+#
+# yargs command completion script
+#
+# Installation: opencode completion >> ~/.zshrc
+#    or opencode completion >> ~/.zprofile on OSX.
+#
+_opencode_yargs_completions()
+{
+  local reply
+  local si=$IFS
+  IFS=$'
+' reply=($(COMP_CWORD="$((CURRENT-1))" COMP_LINE="$BUFFER" COMP_POINT="$CURSOR" opencode --get-yargs-completions "${words[@]}"))
+  IFS=$si
+  if [[ ${#reply} -gt 0 ]]; then
+    _describe 'values' reply
+  else
+    _default
+  fi
+}
+if [[ "'${zsh_eval_context[-1]}" == "loadautofunc" ]]; then
+  _opencode_yargs_completions "$@"
+else
+  compdef _opencode_yargs_completions opencode
+fi
+###-end-opencode-completions-###
+
